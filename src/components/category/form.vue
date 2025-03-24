@@ -402,17 +402,12 @@ onBeforeMount(async () => {
             if (category.cap_NH == 3) {
                 nganhHangCha.value.idCap2 = category.idCha_NH;
 
-                const categoryLevel2 = findCategoryById(category.idCha_NH);
-                if (categoryLevel2) {
-                    nganhHangCha.value.idCap2 = categoryLevel2._id || "none";
+                const categoryLevel1 = findCategoryById(category.idCha_NH);
+                if (categoryLevel1) {
+                    nganhHangCha.value.idCap1 = categoryLevel1.idCha_NH || "none";
                 }
             } else if (category.cap_NH == 2) {
                 nganhHangCha.value.idCap1 = category.idCha_NH;
-
-                const categoryLevel1 = findCategoryById(category.idCha_NH);
-                if (categoryLevel1) {
-                    nganhHangCha.value.idCap1 = categoryLevel1._id || "none";
-                }
             }
         }
     }

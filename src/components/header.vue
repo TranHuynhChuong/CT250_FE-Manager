@@ -5,22 +5,17 @@
         </div>
         <div class="flex-1 flex items-center justify-between">
             <div class="flex flex-1 items-center whitespace-nowrap">
-                <NuxtLink
-                    class="pl-4 text-zinc-400 hover:text-zinc-500 cursor-pointer text-base"
-                    to="/"
-                    >Trang chủ</NuxtLink
-                >
+                <span class="pl-4 text-zinc-400 hover:text-zinc-500 text-base">Trang chủ</span>
                 <div v-for="(item, index) in breadcrumb" :key="index">
                     <span class="mx-2 text-zinc-400"> > </span>
-                    <NuxtLink
-                        :to="item.path"
+                    <span
                         :class="[
                             item.current ? 'text-zinc-900' : 'text-zinc-400 hover:text-zinc-500',
-                            'cursor-pointer text-base',
+                            ' text-base',
                         ]"
                     >
                         {{ item.name }}
-                    </NuxtLink>
+                    </span>
                 </div>
             </div>
             <div class="h-full w-fit relative ml-5">
@@ -42,17 +37,11 @@ const route = useRoute();
 const breadcrumb = computed(() => {
     // Quản lý sản phẩm - Product
     if (route.path.includes("/product/new")) {
-        return [
-            { name: "Sản phẩm", path: "/product" },
-            { name: "Thêm sản phẩm mới", path: route.path, current: true },
-        ];
+        return [{ name: "Sản phẩm" }, { name: "Thêm sản phẩm mới", current: true }];
     } else if (route.path.includes("/product/detail")) {
-        return [
-            { name: "Sản phẩm", path: "/product" },
-            { name: "Chi tiết sản phẩm", path: route.path, current: true },
-        ];
+        return [{ name: "Sản phẩm" }, { name: "Chi tiết sản phẩm", current: true }];
     } else if (route.path.includes("/product/")) {
-        return [{ name: "Sản phẩm", path: "/product", current: true }];
+        return [{ name: "Sản phẩm", current: true }];
     }
 
     return [];

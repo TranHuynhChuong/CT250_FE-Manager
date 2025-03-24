@@ -256,7 +256,7 @@
         <!-- Mô tả sản phẩm -->
         <div class="w-full h-fit mt-10">
             <div class="w-full h-fit flex">
-                <div class="w-48 mr-6 flex justify-end text-sm text-zinc-900" @click="a()">
+                <div class="w-48 mr-6 flex justify-end text-sm text-zinc-900">
                     <span class="text-red-400 mr-1">*</span>
                     Mô tả sản phẩm
                 </div>
@@ -284,7 +284,7 @@
     </div>
 </template>
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onBeforeMount } from "vue";
 
 const props = defineProps(["sanPham"]);
 
@@ -381,53 +381,37 @@ async function getCategory() {
     }
 }
 
-const categorySelected = ref(null);
-
-const findCategoryPath = (id) => {
-    const category = categories.value.find((cat) => cat._id === id);
-    if (!category) return { category1: null, category2: null, category3: null };
-
-    if (category.cap_NH === 1) {
-        return { category1: category, category2: null, category3: null };
-    }
-
-    if (category.cap_NH === 2) {
-        const parent1 = categories.value.find((cat) => cat._id === category.idCha_NH);
-        return { category1: parent1 || null, category2: category, category3: null };
-    }
-
-    if (category.cap_NH === 3) {
-        const parent2 = categories.value.find((cat) => cat._id === category.idCha_NH);
-        const parent1 = categories.value.find((cat) => cat._id === parent2?.idCha_NH);
-        return { category1: parent1 || null, category2: parent2 || null, category3: category };
-    }
-
-    return { category1: null, category2: null, category3: null };
-};
-
-const getCategoryPathString = (_id) => {
-    const categoryPath = findCategoryPath(_id);
-    categorySelected.value = findCategoryPath(_id);
-    return [
-        categoryPath.category1?.ten_NH,
-        categoryPath.category2?.ten_NH,
-        categoryPath.category3?.ten_NH,
-    ]
-        .filter(Boolean)
-        .join(" > ");
-};
+const categorySelected = ref({
+    categoty1: null,
+    category2: null,
+    category3: null,
+});
 
 const formattedCategoriesSelected = ref("Chọn ngành hàng");
 
-const updateCategoriesSelected = (id) => {
-    formattedCategoriesSelected.value = getCategoryPathString(id);
+const getCategoryName = (id) => {
+    const category = categories.value.find((c) => c._id == id);
+
+    return category ? category.ten_NH : "Không rõ";
+};
+
+const updateCategoriesSelected = (data) => {
+    const names = [
+        getCategoryName(data.cap1_NH),
+        getCategoryName(data.cap2_NH),
+        getCategoryName(data.cap3_NH),
+    ].filter((name) => name !== "Không rõ"); // Loại bỏ "Không rõ"
+
+    formattedCategoriesSelected.value = names.length > 0 ? names.join(" > ") : "Chọn ngành hàng";
 };
 
 const handlecategoriesSelected = (data) => {
-    updateCategoriesSelected(data._id);
-    props.sanPham.nganhHang_SP = data._id;
-    props.sanPham.ttChiTiet_SP = getCategoryAttributes(data._id);
-    console.log(props.sanPham);
+    console.log(data);
+    updateCategoriesSelected(data);
+    props.sanPham.nganhHang_SP.cap1_NH = data.cap1_NH;
+    props.sanPham.nganhHang_SP.cap2_NH = data.cap2_NH;
+    props.sanPham.nganhHang_SP.cap3_NH = data.cap3_NH;
+    props.sanPham.ttChiTiet_SP = getCategoryAttributes(data.cap3_NH);
 };
 const validateField = (value, fieldType) => {
     if (fieldType === "anhBia_SP" && (!value || value.length === 0 || value === null))
@@ -455,7 +439,7 @@ const validateForm = () => {
     return true;
 };
 
-onMounted(async () => {
+onBeforeMount(async () => {
     await getCategory();
     updateCategoriesSelected(props.sanPham.nganhHang_SP);
 });

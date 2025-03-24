@@ -41,16 +41,17 @@
                         <div class="w-fit h-fit">{{ stateOrder[order.trangThai_DH] }}</div>
                     </div>
                     <div class="w-full h-fit flex py-6">
-                        <div class="w-2/3 h-fit border-r-[1px]">
+                        <div class="w-2/3 h-fit">
                             <div
                                 v-for="(detail, idx) in order.chiTiet_DH"
                                 :key="idx"
                                 class="w-full h-fit flex px-6"
                             >
                                 <div class="w-full flex border-b-[1px] py-4">
-                                    <div class="w-2/5 h-fit pl-6">
+                                    <div class="w-2/5 h-fit">
                                         <div>{{ detail.tenSanPham_CTDH }}</div>
                                         <div>{{ detail.ttBanHang_CTDH }}</div>
+                                        <div>{{ formattedMaSP(detail.maSanPham_CTDH) }}</div>
                                     </div>
                                     <div class="w-1/5 h-fit">{{ detail.giaMua_CTDH }}</div>
                                     <div class="w-1/5 h-fit">x {{ detail.soLuong_CTDH }}</div>
@@ -59,16 +60,30 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="w-full h-fit flex px-6">
-                                <div class="w-full flex py-4 font-medium">
-                                    <div class="w-2/5 h-fit"></div>
+                            <div class="w-full h-fit flex flex-col px-6">
+                                <div class="w-full flex py-2 font-medium">
+                                    <div class="w-2/5 h-fit">Thành tiền</div>
                                     <div class="w-1/5 h-fit"></div>
                                     <div class="w-1/5 h-fit">{{ totalQuantity(order) }}</div>
                                     <div class="w-1/5 h-fit">{{ totalPrice(order) }}</div>
                                 </div>
+                                <div class="w-full flex py-2 font-medium">
+                                    <div class="w-2/5 h-fit">Phí vận chuyển</div>
+                                    <div class="w-1/5 h-fit"></div>
+                                    <div class="w-1/5 h-fit"></div>
+                                    <div class="w-1/5 h-fit">{{ order.vanChuyen_DH }}</div>
+                                </div>
+                                <div class="w-full flex py-2 font-medium">
+                                    <div class="w-2/5 h-fit">Tổng</div>
+                                    <div class="w-1/5 h-fit"></div>
+                                    <div class="w-1/5 h-fit"></div>
+                                    <div class="w-1/5 h-fit">
+                                        {{ order.vanChuyen_DH + totalPrice(order) }}
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="w-1/3 h-full px-6 space-y-2 pt-2">
+                        <div class="w-1/3 h-full px-6 space-y-2 pt-2 border-l-[1px]">
                             <div class="w-full h-fit">Mã đơn hàng : {{ order.ma_DH }}</div>
                             <div class="w-full h-fit">
                                 Số điện thoại :
@@ -94,8 +109,33 @@
                         </div>
                     </div>
                     <div class="w-full h-fit flex p-6 justify-end bg-zinc-100">
-                        <div class="px-6 py-3 bg-emerald-300 rounded-md cursor-pointer">
+                        <div
+                            v-if="order.trangThai_DH == 1"
+                            @click="updateState('2', order._id)"
+                            class="px-6 py-3 bg-emerald-300 rounded-md cursor-pointer"
+                        >
                             Xác nhận đơn hàng
+                        </div>
+                        <div
+                            v-else-if="order.trangThai_DH == 2"
+                            @click="updateState('3', order._id)"
+                            class="px-6 py-3 bg-emerald-300 rounded-md cursor-pointer"
+                        >
+                            Vận chuyển
+                        </div>
+                        <div
+                            v-else-if="order.trangThai_DH == 3"
+                            @click="updateState('4', order._id)"
+                            class="px-6 py-3 bg-emerald-300 rounded-md cursor-pointer"
+                        >
+                            Đã giao
+                        </div>
+                        <div
+                            v-else-if="order.trangThai_DH == 5"
+                            @click="updateState('6', order._id)"
+                            class="px-6 py-3 bg-emerald-300 rounded-md cursor-pointer"
+                        >
+                            Xác nhận hủy đơn
                         </div>
                     </div>
                 </div>
@@ -236,6 +276,10 @@ const totalQuantity = (order) => {
     return order.chiTiet_DH.reduce((tong, item) => tong + item.soLuong_CTDH, 0);
 };
 
+const formattedMaSP = (code) => {
+    return code.toString().padStart(8, "0");
+};
+
 const authStore = useAuthStore();
 const { $api } = useNuxtApp(); // ✅ Truy cập api từ plugin
 
@@ -255,7 +299,6 @@ const state = computed(() => {
 
 async function getOrders(page) {
     try {
-        console.log(state.value);
         const res = await $api.get("order", {
             params: {
                 page: String(page),
@@ -268,14 +311,24 @@ async function getOrders(page) {
                 totalOrder.value = res.data.data.total;
             }
         }
-
-        console.log(orders.value);
     } catch (error) {
         console.error("Lỗi:", error);
     }
 }
 
-onMounted(() => {
-    getOrders(0);
+async function updateState(state, id) {
+    try {
+        const res = await $api.put(`order/${id}`, null, { params: { state } });
+
+        if (res.data.success == true) {
+            await getOrders(0);
+        }
+    } catch (error) {
+        console.error("Lỗi:", error);
+    }
+}
+
+onMounted(async () => {
+    await getOrders(0);
 });
 </script>

@@ -127,7 +127,11 @@ const sanPham = reactive({
     fileAnh_SP: [],
     anh_SP: [],
     anhBia_SP: null,
-    nganhHang_SP: "",
+    nganhHang_SP: {
+        cap1_NH: "",
+        cap2_NH: "",
+        cap3_NH: "",
+    },
     moTa_SP: "",
     ttChiTiet_SP: [],
     ttBanHang_SP: [],
@@ -158,9 +162,9 @@ async function getProduct(id) {
     }
 }
 
-onMounted(() => {
+onMounted(async () => {
     if (props.id) {
-        getProduct(props.id);
+        await getProduct(props.id);
     }
 });
 </script>

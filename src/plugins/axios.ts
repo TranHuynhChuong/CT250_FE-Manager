@@ -8,12 +8,12 @@ export default defineNuxtPlugin((nuxtApp) => {
     const api = axios.create({
         baseURL: config.public.apiBase,
         withCredentials: true,
+        timeout: 10000,
     });
 
     // 🛑 Request Interceptor: Thêm accessToken vào mỗi request
     // api.interceptors.request.use(
     //     (config) => {
-    //         console.log("accessToken", authStore.accessToken);
     //         if (authStore.accessToken) {
     //             config.headers = config.headers || {};
     //             config.headers.Authorization = `Bearer ${authStore.accessToken}`;
@@ -43,7 +43,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     //             } catch (refreshError) {
     //                 console.error("Lỗi khi refresh token:", refreshError);
     //                 authStore.logout();
-    //                 //router.push("/login"); // ✅ Sử dụng useRouter()
+    //                 router.push("/login"); // ✅ Sử dụng useRouter()
     //             }
     //         }
 

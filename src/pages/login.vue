@@ -94,15 +94,4 @@ async function logout() {
         console.error("Lỗi đăng xuất:", error);
     }
 }
-
-async function test() {
-    try {
-        const res = await $api.get("/auth/refresh-accesstoken", {
-            withCredentials: true,
-        });
-        console.log("thành công:", res);
-    } catch (error) {
-        console.error("Lỗi:", error);
-    }
-}
 </script>

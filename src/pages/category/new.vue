@@ -15,14 +15,27 @@ const { $api } = useNuxtApp(); // ✅ Truy cập api từ plugin
 
 async function addCategory(data) {
     try {
-        console.log(data);
         const res = await $api.post("/categories", data);
-        console.log(res);
         if (res.data.success) {
             router.push("/category");
+            showSuccess();
+        } else {
+            showError();
         }
     } catch (error) {
         console.error("Lỗi:", error);
+        showError();
     }
 }
+
+import { useToast } from "vue-toastification";
+const toast = useToast();
+
+const showSuccess = () => {
+    toast.success("Ngành hàng được thêm thành công");
+};
+
+const showError = () => {
+    toast.error("Có lỗi xảy ra, không thể thêm ngành hàng!");
+};
 </script>

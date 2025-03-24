@@ -340,7 +340,6 @@ const state = computed(() => {
 });
 async function getProducts(page) {
     try {
-        console.log(state.value !== null ? String(state.value) : undefined);
         const res = await $api.get("products/all", {
             params: {
                 page: String(page),

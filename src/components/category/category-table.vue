@@ -17,7 +17,7 @@
                         </tr>
                     </thead>
                     <tbody class="bg-transparent text-zinc-800">
-                        <tr v-for="(category, index) in categories" :key="category._id">
+                        <tr v-for="category in categories" :key="category._id">
                             <td class="py-4 pl-6 pr-1 text-left w-3/12 font-normal text-base">
                                 {{ category.ten_NH }}
                             </td>

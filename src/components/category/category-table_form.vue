@@ -104,9 +104,9 @@ const props = defineProps({
     categories: Object,
 });
 
-const category1 = computed(() => props.categories.filter((cat) => cat.cap_NH === 1));
-const category2 = computed(() => props.categories.filter((cat) => cat.cap_NH === 2));
-const category3 = computed(() => props.categories.filter((cat) => cat.cap_NH === 3));
+const category1 = computed(() => props.categories.filter((cat) => cat.cap_NH == 1));
+const category2 = computed(() => props.categories.filter((cat) => cat.cap_NH == 2));
+const category3 = computed(() => props.categories.filter((cat) => cat.cap_NH == 3));
 
 const category1Selected = ref(props.categoriesSelected.category1);
 const category2Selected = ref(props.categoriesSelected.category2);
@@ -124,18 +124,11 @@ const handleCategory3Selected = (category3) => {
 const emit = defineEmits(["close", "confirm"]);
 
 const confirm = () => {
-    const selectedCategories = [
-        category1Selected.value,
-        category2Selected.value,
-        category3Selected.value,
-    ].filter(Boolean);
-
-    const lowestCategory = selectedCategories.reduce(
-        (lowest, current) => (current.cap_NH > (lowest?.cap_NH || 0) ? current : lowest),
-        null
-    );
-
-    emit("confirm", { _id: lowestCategory?._id || null });
+    emit("confirm", {
+        cap1_NH: category1Selected.value._id,
+        cap2_NH: category2Selected.value._id,
+        cap3_NH: category3Selected.value._id,
+    });
     emit("close");
 };
 </script>
